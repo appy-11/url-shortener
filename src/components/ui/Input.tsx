@@ -1,3 +1,8 @@
+/**
+ * Input component for rendering a styled input field with an associated label.
+ * This component accepts standard input attributes and additional props for customization.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import type { InputHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {

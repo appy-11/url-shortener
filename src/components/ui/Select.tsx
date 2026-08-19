@@ -1,3 +1,8 @@
+/**
+ * Select component for rendering a styled dropdown select element with an associated label.
+ * This component accepts standard select attributes, an array of options, and additional props for customization.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import type { SelectHTMLAttributes } from "react";
 
 interface SelectOption {

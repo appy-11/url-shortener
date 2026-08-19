@@ -1,3 +1,10 @@
+/**
+ * App component serves as the main entry point of the application.
+ * It sets up the routing for different pages, including CreateUrlPage, LinksPage, AnalyticsPage, and NotFoundPage.
+ * The Navbar component is included for navigation across the application.
+ * It uses React's Suspense to handle lazy loading of pages for better performance.
+ * Default styles are applied to ensure a consistent look and feel across the application.
+ */
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 

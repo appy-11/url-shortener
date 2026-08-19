@@ -1,3 +1,7 @@
+/**
+ * PageLoader component for rendering a loading indicator while pages are being fetched.
+ * This component displays a spinning loader and a "Loading..." message to inform users that content is being loaded. 
+ */
 const PageLoader = () => {
   return (
     <div className="flex min-h-[70vh] items-center justify-center">

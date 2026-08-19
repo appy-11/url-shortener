@@ -1,3 +1,11 @@
+/**
+ * AnalyticsPage component for displaying analytics of a specific short URL.
+ * This component retrieves the short URL based on the ID from the URL parameters
+ * and displays its analytics, including total clicks, creation date, and expiry date.
+ * It also provides a placeholder for future analytics charts.
+ * If the short URL is not found, it displays a "URL not found" message with a link to return to the links page.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import { Link, useParams } from "react-router-dom";
 
 import { MOCK_URLS } from "@/data/url.data";

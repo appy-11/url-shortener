@@ -1,4 +1,8 @@
-//temp file until we have a backend to fetch data from
+/**
+ * Mock data for short URLs used in the application.
+ * This data simulates a list of short URLs with their properties, including ID, short code, original URL, click count, creation date, expiry date, and status.
+ * It is used for testing and development purposes to provide a realistic dataset for the application.
+ */
 import type { ShortUrl } from "../types/url";
 
 export const MOCK_URLS: ShortUrl[] = [

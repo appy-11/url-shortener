@@ -1,3 +1,9 @@
+/**
+ * LinksPage component for displaying a list of short URLs.
+ * This page includes a table of short URLs with options to view each link.
+ * It utilizes the UrlTable component to render the list of URLs in a tabular format.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import { Link } from "react-router-dom";
 
 import UrlTable from "@/components/urls/UrlTable";

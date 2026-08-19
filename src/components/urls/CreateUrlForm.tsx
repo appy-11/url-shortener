@@ -1,3 +1,9 @@
+/**
+ * CreateUrlForm component for rendering a form to create a short URL.
+ * This component manages form state, handles input changes, and submits the form data.
+ * It utilizes Input, Select, and Button components for a consistent UI.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import { useState } from "react";
 
 import Button from "../ui/Button";
@@ -11,12 +17,11 @@ import { APP_CONFIG } from "@/config/app.config";
 import type { CreateUrlPayload } from "@/types/url";
 
 const CreateUrlForm = () => {
-  const [formData, setFormData] =
-    useState<CreateUrlPayload>({
+  const [formData, setFormData] = useState<CreateUrlPayload>({
       url: "",
       alias: "",
       expiry: "never",
-    });
+  });
 
   const handleChange = (
     event: React.ChangeEvent<

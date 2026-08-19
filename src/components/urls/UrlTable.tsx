@@ -1,3 +1,9 @@
+/**
+ * UrlTable component for rendering a table of short URLs.
+ * This component displays a list of short URLs in a tabular format with options to view each link.
+ * It applies default styles for a consistent look and feel across the application.
+
+ */
 import { Link } from "react-router-dom";
 
 import type { ShortUrl } from "@/types/url";

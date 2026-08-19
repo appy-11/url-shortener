@@ -1,3 +1,9 @@
+/**
+ * NotFoundPage component for handling 404 errors.
+ * This page is displayed when a user navigates to a route that does not exist.
+ * It provides a user-friendly message indicating that the page was not found and includes a link to return to the home page.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import { Link } from "react-router-dom";
 
 const NotFoundPage = () => {

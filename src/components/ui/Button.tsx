@@ -1,3 +1,8 @@
+/**
+ * Button component for rendering a styled button element.
+ * This component accepts standard button attributes and additional props for customization.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

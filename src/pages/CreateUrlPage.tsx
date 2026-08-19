@@ -1,3 +1,9 @@
+/**
+ * CreateUrlPage component for creating a new short URL.
+ * This page includes a form for users to input a long URL, an optional alias, and an expiry option.
+ * It utilizes the CreateUrlForm component to handle form state and submission.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import CreateUrlForm from "@/components/urls/CreateUrlForm";
 
 const CreateUrlPage = () => {

@@ -1,3 +1,8 @@
+/**
+ * Navbar component
+ * This component is used to display the navigation bar at the top of the page.
+ * It includes the application name and navigation links defined in the NAVIGATION_CONFIG.
+ */
 import { NavLink } from "react-router-dom";
 
 import { APP_CONFIG } from "@/config/app.config";

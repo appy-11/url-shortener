@@ -1,3 +1,8 @@
+/**
+ * URL configuration for the application.
+ * This configuration includes settings for alias length and expiry options for short URLs.
+ * These constants are used throughout the application to enforce consistent rules and options for URL creation.
+ */
 export const URL_CONFIG = {
   alias: {
     minLength: 3,

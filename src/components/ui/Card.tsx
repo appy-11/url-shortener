@@ -1,3 +1,8 @@
+/**
+ * Card component for rendering a styled card container.
+ * This component accepts children elements and an optional className for additional styling.
+ * It applies default styles for a consistent look and feel across the application.
+ */
 import type { ReactNode } from "react";
 
 interface CardProps {
