@@ -1,10 +1,14 @@
-export default function App() {
+import Navbar from "@/components/layout/Navbar";
+import CreateUrlPage from "./pages/CreateUrlPage";
+
+function App() {
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <h1 className="text-4xl font-bold text-white">
-        App
-      </h1>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Navbar />
+
+      <CreateUrlPage />
     </div>
-  )
+  );
 }
 
+export default App;
