@@ -5,30 +5,29 @@
  * Instead of using the native select element, this component uses a
  * button to toggle the visibility of the options list, allowing for more flexible styling and behavior.
  * This was done to provide a more customizable and visually appealing select component that can be
- *  easily integrated into the application's UI specifically for the mobile view.
+ * easily integrated into the application's UI specifically for the mobile view.
  * @param id - The unique identifier for the select element, used for accessibility and form association.
  * @param label - The text label associated with the select element, displayed above the dropdown.
  */
-import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useId, useRef, useState } from 'react'
+import type { KeyboardEvent } from 'react'
+
+import { FiChevronDown } from 'react-icons/fi'
+import Button from './Button'
 
 export interface SelectOption {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 
 interface SelectProps {
-  id: string;
-  label: string;
-  value: string;
-  options: readonly SelectOption[];
-  onChange: (value: string) => void;
-  optional?: boolean;
-  placeholder?: string;
-  renderOption?: (
-    option: SelectOption,
-    isSelected: boolean
-  ) => ReactNode;
+  id: string
+  label: string
+  value: string
+  options: readonly SelectOption[]
+  onChange: (value: string) => void
+  optional?: boolean
+  placeholder?: string
 }
 
 const Select = ({
@@ -38,132 +37,225 @@ const Select = ({
   options,
   onChange,
   optional = false,
-  placeholder = "Select an option",
-  renderOption,
+  placeholder = 'Select an option',
 }: SelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [highlightedIndex, setHighlightedIndex] = useState(0)
 
-  const selectedOption = options.find(
-    (option) => option.value === value
-  );
+  const containerRef = useRef<HTMLDivElement>(null)
 
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  const listboxId = useId()
+
+  const selectedIndex = options.findIndex((option) => option.value === value)
+
+  const selectedOption = selectedIndex >= 0 ? options[selectedIndex] : undefined
+
+  const openDropdown = () => {
+    setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0)
+
+    setIsOpen(true)
+  }
+
+  const closeDropdown = () => {
+    setIsOpen(false)
+  }
+
+  const selectOption = (index: number) => {
+    const option = options[index]
+
+    if (!option) {
+      return
+    }
+
+    onChange(option.value)
+    closeDropdown()
+
+    buttonRef.current?.focus()
+  }
+
+  const moveHighlight = (direction: 1 | -1) => {
+    setHighlightedIndex((currentIndex) => {
+      const nextIndex = currentIndex + direction
+
+      if (nextIndex < 0) {
+        return options.length - 1
+      }
+
+      if (nextIndex >= options.length) {
+        return 0
+      }
+
+      return nextIndex
+    })
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case 'Enter':
+      case ' ':
+        event.preventDefault()
+
+        if (!isOpen) {
+          openDropdown()
+          return
+        }
+
+        selectOption(highlightedIndex)
+        return
+
+      case 'ArrowDown':
+        event.preventDefault()
+
+        if (!isOpen) {
+          openDropdown()
+          return
+        }
+
+        moveHighlight(1)
+        return
+
+      case 'ArrowUp':
+        event.preventDefault()
+
+        if (!isOpen) {
+          openDropdown()
+          return
+        }
+
+        moveHighlight(-1)
+        return
+
+      case 'Home':
+        if (!isOpen) {
+          return
+        }
+
+        event.preventDefault()
+        setHighlightedIndex(0)
+        return
+
+      case 'End':
+        if (!isOpen) {
+          return
+        }
+
+        event.preventDefault()
+        setHighlightedIndex(options.length - 1)
+        return
+
+      case 'Escape':
+        if (!isOpen) {
+          return
+        }
+
+        event.preventDefault()
+        closeDropdown()
+        return
+
+      default:
+        return
+    }
+  }
+
+  /*
+   * This effect is valid because we're subscribing
+   * to an external DOM event.
+   */
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(
-          event.target as Node
-        )
-      ) {
-        setIsOpen(false);
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        closeDropdown()
       }
-    };
+    }
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
+    document.addEventListener('mousedown', handleClickOutside)
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
-  }, []);
-
-  const handleSelect = (option: SelectOption) => {
-    onChange(option.value);
-    setIsOpen(false);
-  };
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className="relative"
-    >
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-medium text-slate-700"
-      >
+    <div ref={containerRef} className="relative">
+      <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-700">
         {label}
 
-        {optional && (
-          <span className="ml-1 font-normal text-slate-400">
-            (optional)
-          </span>
-        )}
+        {optional && <span className="ml-1 font-normal text-slate-400">(optional)</span>}
       </label>
 
-      <button
+      <Button
+        ref={buttonRef}
         id={id}
         type="button"
+        variant="secondary"
+        fullWidth
+        role="combobox"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((previous) => !previous)}
-        className="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-4 py-3 text-left text-sm outline-none transition hover:border-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-      >
-        <span
-          className={
-            selectedOption
-              ? "text-slate-900"
-              : "text-slate-400"
+        aria-controls={listboxId}
+        aria-activedescendant={
+          isOpen ? `${listboxId}-option-${highlightedIndex}` : undefined
+        }
+        onClick={() => {
+          if (isOpen) {
+            closeDropdown()
+          } else {
+            openDropdown()
           }
-        >
+        }}
+        onKeyDown={handleKeyDown}
+        className="flex justify-between text-left"
+      >
+        <span className={selectedOption ? 'text-slate-900' : 'text-slate-400'}>
           {selectedOption?.label ?? placeholder}
         </span>
 
-        <svg
-          className={`h-4 w-4 text-slate-500 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
+        <FiChevronDown
+          size={20}
+          strokeWidth={2}
           aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
+          className={`shrink-0 transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </Button>
 
       {isOpen && (
         <div
+          id={listboxId}
           role="listbox"
           aria-labelledby={id}
-          className="absolute left-0 right-0 z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
+          className="absolute right-0 left-0 z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
         >
-          {options.map((option) => {
-            const isSelected =
-              option.value === value;
+          {options.map((option, index) => {
+            const isSelected = option.value === value
+
+            const isHighlighted = index === highlightedIndex
 
             return (
-              <button
+              <Button
                 key={option.value}
                 type="button"
+                variant="ghost"
                 role="option"
                 aria-selected={isSelected}
-                onClick={() => handleSelect(option)}
-                className={`flex w-full items-center rounded-md px-3 py-2.5 text-left text-sm transition ${
-                  isSelected
-                    ? "bg-slate-100 font-medium text-slate-900"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                onClick={() => selectOption(index)}
+                className={`flex w-full items-center justify-start rounded-md px-3 py-2.5 text-left ${
+                  isHighlighted ? 'bg-slate-100 text-slate-900' : 'text-slate-700'
+                } ${isSelected ? 'font-medium' : ''}`}
               >
-                {renderOption
-                  ? renderOption(option, isSelected)
-                  : option.label}
-              </button>
-            );
+                {option.label}
+              </Button>
+            )
           })}
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Select;
+export default Select
