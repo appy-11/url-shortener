@@ -1,18 +1,17 @@
-/**
- * Input component for rendering a styled input field with an associated label.
- * This component accepts standard input attributes and additional props for customization.
- * It applies default styles for a consistent look and feel across the application.
- */
 import type { InputHTMLAttributes } from "react";
+
+import FormError from "./FormError";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   optional?: boolean;
+  error?: string;
 }
 
 const Input = ({
   label,
   optional = false,
+  error,
   id,
   className = "",
   ...props
@@ -35,8 +34,17 @@ const Input = ({
       <input
         id={id}
         {...props}
-        className={`w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 ${className}`}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={`w-full rounded-lg border px-4 py-3 outline-none transition ${error
+            ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+            : "border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          } ${className}`}
       />
+
+      <div id={`${id}-error`}>
+        <FormError message={error} />
+      </div>
     </div>
   );
 };

@@ -1,27 +1,45 @@
-/**
- * CreateUrlForm component for rendering a form to create a short URL.
- * This component manages form state, handles input changes, and submits the form data.
- * It utilizes Input, Select, and Button components for a consistent UI.
- * It applies default styles for a consistent look and feel across the application.
- */
 import { useState } from "react";
 
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
+import FormError from "../ui/FormError";
 
-import { URL_CONFIG } from "@/config/url.config";
-import { APP_CONFIG } from "@/config/app.config";
+import { URL_CONFIG } from "../../config/url.config";
+import { APP_CONFIG } from "../../config/app.config";
 
-import type { CreateUrlPayload } from "@/types/url";
+import type {
+  CreateUrlPayload,
+  ShortUrl,
+} from "../../types/url";
+
+import {
+  validateCreateUrl,
+  type CreateUrlErrors,
+} from "../../utils/url.validation";
+
+import { createShortUrl } from "../../services/url.service";
+import ShortUrlCard from "./ShortUrlCard";
+
+const INITIAL_FORM_DATA: CreateUrlPayload = {
+  url: "",
+  alias: "",
+  expiry: "never",
+};
 
 const CreateUrlForm = () => {
-  const [formData, setFormData] = useState<CreateUrlPayload>({
-      url: "",
-      alias: "",
-      expiry: "never",
-  });
+  const [formData, setFormData] =
+    useState<CreateUrlPayload>(INITIAL_FORM_DATA);
+
+  const [errors, setErrors] =
+    useState<CreateUrlErrors>({});
+
+  const [createdUrl, setCreatedUrl] =
+    useState<ShortUrl | null>(null);
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -34,21 +52,62 @@ const CreateUrlForm = () => {
       ...previous,
       [name]: value,
     }));
+
+    setErrors((previous) => ({
+      ...previous,
+      [name]: undefined,
+    }));
   };
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
-    console.log(formData);
+    const validationErrors =
+      validateCreateUrl(formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const result = await createShortUrl(formData);
+
+      setCreatedUrl(result);
+    } catch {
+      setErrors({
+        url: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handleCreateAnother = () => {
+    setCreatedUrl(null);
+    setFormData(INITIAL_FORM_DATA);
+    setErrors({});
+  };
+
+  if (createdUrl) {
+    return (
+      <ShortUrlCard
+        url={createdUrl}
+        onCreateAnother={handleCreateAnother}
+      />
+    );
+  }
 
   return (
     <Card>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => void handleSubmit(e)}
         className="space-y-5"
+        noValidate
       >
         <Input
           id="url"
@@ -58,6 +117,7 @@ const CreateUrlForm = () => {
           placeholder="https://example.com/very/long/url"
           value={formData.url}
           onChange={handleChange}
+          error={errors.url}
           required
         />
 
@@ -67,6 +127,7 @@ const CreateUrlForm = () => {
             className="mb-2 block text-sm font-medium text-slate-700"
           >
             Custom alias
+
             <span className="ml-1 font-normal text-slate-400">
               (optional)
             </span>
@@ -86,9 +147,15 @@ const CreateUrlForm = () => {
               onChange={handleChange}
               minLength={URL_CONFIG.alias.minLength}
               maxLength={URL_CONFIG.alias.maxLength}
-              className="min-w-0 flex-1 rounded-r-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className={`min-w-0 flex-1 rounded-r-lg border px-4 py-3 outline-none focus:ring-2 ${
+                errors.alias
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-slate-300 focus:border-slate-500 focus:ring-slate-200"
+              }`}
             />
           </div>
+
+          <FormError message={errors.alias} />
         </div>
 
         <Select
@@ -101,8 +168,14 @@ const CreateUrlForm = () => {
           options={URL_CONFIG.expiryOptions}
         />
 
-        <Button type="submit">
-          Create Short URL
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? "Creating..."
+            : "Create Short URL"}
         </Button>
       </form>
     </Card>
