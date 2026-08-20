@@ -1,23 +1,30 @@
 /**
- * Service for creating short URLs.
- * This service provides functions to interact with the
- * backend API for creating and retrieving short URLs.
- * Currently, it uses mock data to simulate API
- * responses for development and testing purposes.
- * @param payload - The payload containing the original URL and optional alias.
- * @returns A promise that resolves to the created short URL.
+ * This module provides mock implementations of URL-related services for testing and development purposes.
+ * It simulates API calls for fetching shortened URLs, retrieving analytics data, and creating new shortened URLs.
+ * The mock implementations introduce artificial delays to mimic real-world network latency.
+ * These services return predefined mock data to facilitate testing and development without relying on a live backend.
+ * The module exports the following functions:
+ * - `getShortUrls`: Fetches a list of shortened URLs.
+ * - `getUrlAnalytics`: Retrieves analytics data for a specific shortened URL by its ID.
+ * - `createShortUrl`: Creates a new shortened URL based on the provided payload.
  */
-import { MOCK_URLS } from '../data/url.data'
 import { MOCK_CLICK_HISTORY } from '../data/analytics.data'
+import { MOCK_URLS } from '../data/url.data'
 
 import type { CreateUrlPayload, ShortUrl, UrlAnalytics } from '../types/url'
 
 const MOCK_API_DELAY = 800
 
 const delay = (ms: number) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     setTimeout(resolve, ms)
   })
+
+export const getShortUrls = async (): Promise<ShortUrl[]> => {
+  await delay(MOCK_API_DELAY)
+
+  return MOCK_URLS
+}
 
 export const getUrlAnalytics = async (id: string): Promise<UrlAnalytics> => {
   await delay(MOCK_API_DELAY)
@@ -32,12 +39,6 @@ export const getUrlAnalytics = async (id: string): Promise<UrlAnalytics> => {
     url,
     clickHistory: MOCK_CLICK_HISTORY,
   }
-}
-
-export const getShortUrls = async (): Promise<ShortUrl[]> => {
-  await delay(MOCK_API_DELAY)
-
-  return MOCK_URLS
 }
 
 export const createShortUrl = async (payload: CreateUrlPayload): Promise<ShortUrl> => {

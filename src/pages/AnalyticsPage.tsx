@@ -8,7 +8,7 @@
 import { Link, useParams } from 'react-router-dom'
 
 import Button from '../components/ui/Button'
-import EmptyState from '../components/ui/EmptyState'
+import ErrorState from '../components/ui/ErrorState'
 
 import AnalyticsSkeleton from '@/components/analytics/AnalyticsSkeleton'
 import AnalyticsStats from '@/components/analytics/AnalyticsStats'
@@ -27,9 +27,9 @@ const AnalyticsPage = () => {
       {isLoading && <AnalyticsSkeleton />}
 
       {!isLoading && error && (
-        <EmptyState
+        <ErrorState
           title="Unable to load analytics"
-          description={error}
+          message={error}
           action={
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button type="button" onClick={() => void refetch()}>

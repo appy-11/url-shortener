@@ -21,6 +21,7 @@
 import { Link } from 'react-router-dom'
 
 import Button from '@/components/ui/Button'
+import ErrorState from '../components/ui/ErrorState'
 import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
 
@@ -101,9 +102,9 @@ const LinksPage = () => {
 
         {/* Error */}
         {!isLoading && error && (
-          <EmptyState
-            title="Something went wrong"
-            description={error}
+          <ErrorState
+            title="Unable to load links"
+            message={error}
             action={
               <Button type="button" onClick={() => void refetch()}>
                 Try Again

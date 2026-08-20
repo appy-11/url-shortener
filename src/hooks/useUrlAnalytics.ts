@@ -1,13 +1,16 @@
 /**
  * A custom React hook that fetches and manages analytics data for a given URL ID.
  * This hook provides the analytics data, loading state, error state, and a refetch function.
+ * This uses the useAsync hook to handle the asynchronous fetching of analytics data and manage the associated state.
  * It uses the `getUrlAnalytics` service function to retrieve the analytics data from the backend.
  * @param id - The unique identifier of the short URL for which to fetch analytics data.
  * @returns An object containing the analytics data, loading state, error state, and a refetch function.
  */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 
+import { useAsync } from './useAsync'
 import { getUrlAnalytics } from '../services/url.service'
+
 import type { UrlAnalytics } from '../types/url'
 
 interface UseUrlAnalyticsResult {
@@ -18,42 +21,20 @@ interface UseUrlAnalyticsResult {
 }
 
 export const useUrlAnalytics = (id: string | undefined): UseUrlAnalyticsResult => {
-  const [analytics, setAnalytics] = useState<UrlAnalytics | null>(null)
-
-  const [isLoading, setIsLoading] = useState(true)
-
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchAnalytics = useCallback(async () => {
+  const fetchAnalytics = useCallback(() => {
     if (!id) {
-      setError('Invalid URL.')
-      setIsLoading(false)
-      return
+      return Promise.reject(new Error('Invalid URL.'))
     }
 
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const data = await getUrlAnalytics(id)
-
-      setAnalytics(data)
-    } catch {
-      setAnalytics(null)
-      setError('Unable to load analytics for this URL.')
-    } finally {
-      setIsLoading(false)
-    }
+    return getUrlAnalytics(id)
   }, [id])
 
-  useEffect(() => {
-    void fetchAnalytics()
-  }, [fetchAnalytics])
+  const { data, isLoading, error, execute } = useAsync(fetchAnalytics)
 
   return {
-    analytics,
+    analytics: data,
     isLoading,
     error,
-    refetch: fetchAnalytics,
+    refetch: execute,
   }
 }
