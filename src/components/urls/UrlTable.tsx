@@ -4,16 +4,35 @@
  * It applies default styles for a consistent look and feel across the application.
 
  */
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import type { ShortUrl } from "@/types/url";
+import Button from "../ui/Button";
+
 import { APP_CONFIG } from "@/config/app.config";
+import type { ShortUrl } from "@/types/url";
 
 interface UrlTableProps {
   urls: ShortUrl[];
 }
 
 const UrlTable = ({ urls }: UrlTableProps) => {
+  const [copiedId, setCopiedId] = useState<string | null>(
+    null
+  );
+
+  const handleCopy = async (url: ShortUrl) => {
+    const shortUrl = `https://${APP_CONFIG.shortUrlDomain}/${url.shortCode}`;
+
+    await navigator.clipboard.writeText(shortUrl);
+
+    setCopiedId(url.id);
+
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
       <table className="w-full text-left">
@@ -35,7 +54,9 @@ const UrlTable = ({ urls }: UrlTableProps) => {
               Status
             </th>
 
-            <th className="px-6 py-4" />
+            <th className="px-6 py-4 text-right text-sm font-medium text-slate-600">
+              Actions
+            </th>
           </tr>
         </thead>
 
@@ -43,19 +64,22 @@ const UrlTable = ({ urls }: UrlTableProps) => {
           {urls.map((url) => (
             <tr
               key={url.id}
-              className="hover:bg-slate-50"
+              className="transition hover:bg-slate-50"
             >
               <td className="px-6 py-4">
-                <Link
-                  to={`/links/${url.id}`}
-                  className="font-medium text-slate-900 hover:underline"
-                >
+                <p className="font-medium text-slate-900">
                   {APP_CONFIG.shortUrlDomain}/{url.shortCode}
-                </Link>
+                </p>
+
+                <p className="mt-1 text-xs text-slate-400">
+                  {new Date(url.createdAt).toLocaleDateString()}
+                </p>
               </td>
 
-              <td className="max-w-xs truncate px-6 py-4 text-sm text-slate-500">
-                {url.originalUrl}
+              <td className="max-w-xs px-6 py-4">
+                <p className="truncate text-sm text-slate-500">
+                  {url.originalUrl}
+                </p>
               </td>
 
               <td className="px-6 py-4 text-sm text-slate-700">
@@ -74,13 +98,28 @@ const UrlTable = ({ urls }: UrlTableProps) => {
                 </span>
               </td>
 
-              <td className="px-6 py-4 text-right">
-                <Link
-                  to={`/links/${url.id}`}
-                  className="text-sm font-medium text-slate-700 hover:text-slate-950"
-                >
-                  View
-                </Link>
+              <td className="px-6 py-4">
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => void handleCopy(url)}
+                    className="px-3 py-2"
+                  >
+                    {copiedId === url.id
+                      ? "Copied!"
+                      : "Copy"}
+                  </Button>
+
+                  <Link to={`/links/${url.id}`}>
+                    <Button
+                      type="button"
+                      className="px-3 py-2"
+                    >
+                      Analytics
+                    </Button>
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}

@@ -35,4 +35,19 @@ export const URL_CONFIG = {
       value: "custom",
     },
   ],
+
+  statusFilters: [
+    {
+      label: "All",
+      value: "all",
+    },
+    {
+      label: "Active",
+      value: "active",
+    },
+    {
+      label: "Expired",
+      value: "expired",
+    },
+  ],
 } as const;
