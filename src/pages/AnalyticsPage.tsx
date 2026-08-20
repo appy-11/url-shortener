@@ -1,123 +1,81 @@
 /**
- * AnalyticsPage component for displaying analytics of a specific short URL.
- * This component retrieves the short URL based on the ID from the URL parameters
- * and displays its analytics, including total clicks, creation date, and expiry date.
- * It also provides a placeholder for future analytics charts.
- * If the short URL is not found, it displays a "URL not found" message with a link to return to the links page.
- * It applies default styles for a consistent look and feel across the application.
+ * This is the main page component for displaying analytics of a specific shortened URL.
+ * It fetches the analytics data using the useUrlAnalytics hook and manages loading and error states.
+ * The page displays a skeleton loader while data is being fetched, and shows an error message if the fetch fails.
+ * Once the data is successfully fetched, it renders the AnalyticsUrlCard, AnalyticsStats, and ClicksChart components to present the analytics information.
+ * The page also includes navigation links to return to the list of shortened URLs.
  */
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from 'react-router-dom'
 
-import { MOCK_URLS } from "@/data/url.data";
-import { APP_CONFIG } from "@/config/app.config";
-import Card from "@/components/ui/Card";
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+
+import AnalyticsSkeleton from '@/components/analytics/AnalyticsSkeleton'
+import AnalyticsStats from '@/components/analytics/AnalyticsStats'
+import AnalyticsUrlCard from '@/components/analytics/AnalyticsUrlCard'
+import ClicksChart from '@/components/analytics/ClicksChart'
+
+import { useUrlAnalytics } from '../hooks/useUrlAnalytics'
 
 const AnalyticsPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
 
-  const url = MOCK_URLS.find((item) => item.id === id);
-
-  if (!url) {
-    return (
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="text-2xl font-bold">
-          URL not found
-        </h2>
-
-        <Link
-          to="/links"
-          className="mt-4 inline-block text-sm font-medium underline"
-        >
-          Back to links
-        </Link>
-      </main>
-    );
-  }
+  const { analytics, isLoading, error, refetch } = useUrlAnalytics(id)
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
-      <Link
-        to="/links"
-        className="text-sm text-slate-500 hover:text-slate-900"
-      >
-        ← Back to links
-      </Link>
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      {isLoading && <AnalyticsSkeleton />}
 
-      <div className="mt-6">
-        <h2 className="text-3xl font-bold tracking-tight">
-          URL Analytics
-        </h2>
+      {!isLoading && error && (
+        <EmptyState
+          title="Unable to load analytics"
+          description={error}
+          action={
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button type="button" onClick={() => void refetch()}>
+                Try Again
+              </Button>
 
-        <p className="mt-2 text-slate-500">
-          Performance details for your shortened URL.
-        </p>
-      </div>
+              <Link to="/links">
+                <Button type="button" variant="secondary" fullWidth>
+                  Back to Links
+                </Button>
+              </Link>
+            </div>
+          }
+        />
+      )}
 
-      <Card className="mt-8">
-        <div>
-          <p className="text-sm text-slate-500">
-            Short URL
-          </p>
+      {!isLoading && !error && analytics && (
+        <>
+          <Link
+            to="/links"
+            className="text-sm font-medium text-slate-500 hover:text-slate-900"
+          >
+            ← Back to links
+          </Link>
 
-          <p className="mt-1 text-lg font-semibold">
-            {APP_CONFIG.shortUrlDomain}/{url.shortCode}
-          </p>
-        </div>
+          <div className="mt-6">
+            <h1 className="text-3xl font-bold tracking-tight">URL Analytics</h1>
 
-        <div className="mt-6">
-          <p className="text-sm text-slate-500">
-            Original URL
-          </p>
+            <p className="mt-2 text-sm text-slate-500 sm:text-base">
+              Track how your shortened URL is performing.
+            </p>
+          </div>
 
-          <p className="mt-1 break-all text-sm text-slate-700">
-            {url.originalUrl}
-          </p>
-        </div>
-      </Card>
+          <div className="mt-8">
+            <AnalyticsUrlCard url={analytics.url} />
+          </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-3">
-        <Card>
-          <p className="text-sm text-slate-500">
-            Total Clicks
-          </p>
+          <div className="mt-6">
+            <AnalyticsStats url={analytics.url} />
+          </div>
 
-          <p className="mt-2 text-3xl font-bold">
-            {url.clicks.toLocaleString()}
-          </p>
-        </Card>
-
-        <Card>
-          <p className="text-sm text-slate-500">
-            Created
-          </p>
-
-          <p className="mt-2 text-lg font-semibold">
-            {url.createdAt}
-          </p>
-        </Card>
-
-        <Card>
-          <p className="text-sm text-slate-500">
-            Expires
-          </p>
-
-          <p className="mt-2 text-lg font-semibold">
-            {url.expiresAt ?? "Never"}
-          </p>
-        </Card>
-      </div>
-
-      <Card className="mt-6">
-        <p className="text-sm font-medium text-slate-700">
-          Clicks over time
-        </p>
-
-        <div className="mt-6 flex h-64 items-center justify-center rounded-lg bg-slate-50 text-sm text-slate-400">
-          Analytics chart coming soon
-        </div>
-      </Card>
+          <ClicksChart data={analytics.clickHistory} />
+        </>
+      )}
     </main>
-  );
-};
+  )
+}
 
-export default AnalyticsPage;
+export default AnalyticsPage
