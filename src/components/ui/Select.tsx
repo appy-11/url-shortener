@@ -15,22 +15,22 @@ import type { KeyboardEvent } from 'react'
 import { FiChevronDown } from 'react-icons/fi'
 import Button from './Button'
 
-export interface SelectOption {
+export interface SelectOption<TValue extends string = string> {
   label: string
-  value: string
+  value: TValue
 }
 
-interface SelectProps {
+interface SelectProps<TValue extends string> {
   id: string
   label: string
-  value: string
-  options: readonly SelectOption[]
-  onChange: (value: string) => void
+  value: TValue
+  options: readonly SelectOption<TValue>[]
+  onChange: (value: TValue) => void
   optional?: boolean
   placeholder?: string
 }
 
-const Select = ({
+const Select = <TValue extends string>({
   id,
   label,
   value,
@@ -38,7 +38,7 @@ const Select = ({
   onChange,
   optional = false,
   placeholder = 'Select an option',
-}: SelectProps) => {
+}: SelectProps<TValue>) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const [highlightedIndex, setHighlightedIndex] = useState(0)
@@ -180,10 +180,17 @@ const Select = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-700">
+      <label
+        htmlFor={id}
+        className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
+      >
         {label}
 
-        {optional && <span className="ml-1 font-normal text-slate-400">(optional)</span>}
+        {optional && (
+          <span className="ml-1 font-normal text-slate-400 dark:text-slate-500">
+            (optional)
+          </span>
+        )}
       </label>
 
       <Button
@@ -209,7 +216,13 @@ const Select = ({
         onKeyDown={handleKeyDown}
         className="flex justify-between text-left"
       >
-        <span className={selectedOption ? 'text-slate-900' : 'text-slate-400'}>
+        <span
+          className={
+            selectedOption
+              ? 'text-slate-900 dark:text-white'
+              : 'text-slate-400 dark:text-slate-500'
+          }
+        >
           {selectedOption?.label ?? placeholder}
         </span>
 
@@ -217,7 +230,7 @@ const Select = ({
           size={20}
           strokeWidth={2}
           aria-hidden="true"
-          className={`shrink-0 transition-transform duration-200 ${
+          className={`shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -228,7 +241,7 @@ const Select = ({
           id={listboxId}
           role="listbox"
           aria-labelledby={id}
-          className="absolute right-0 left-0 z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
+          className="absolute right-0 left-0 z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
         >
           {options.map((option, index) => {
             const isSelected = option.value === value
@@ -245,7 +258,9 @@ const Select = ({
                 onMouseEnter={() => setHighlightedIndex(index)}
                 onClick={() => selectOption(index)}
                 className={`flex w-full items-center justify-start rounded-md px-3 py-2.5 text-left ${
-                  isHighlighted ? 'bg-slate-100 text-slate-900' : 'text-slate-700'
+                  isHighlighted
+                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white'
+                    : 'text-slate-700 dark:text-slate-300'
                 } ${isSelected ? 'font-medium' : ''}`}
               >
                 {option.label}

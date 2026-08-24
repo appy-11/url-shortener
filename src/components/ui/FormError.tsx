@@ -4,19 +4,15 @@
  * @returns A paragraph element with the error message, or null if no message is provided.
  */
 interface FormErrorProps {
-  message?: string;
+  message?: string
 }
 
 const FormError = ({ message }: FormErrorProps) => {
   if (!message) {
-    return null;
+    return null
   }
 
-  return (
-    <p className="mt-1.5 text-sm text-red-600">
-      {message}
-    </p>
-  );
-};
+  return <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{message}</p>
+}
 
-export default FormError;
+export default FormError

@@ -50,15 +50,17 @@ const AnalyticsPage = () => {
         <>
           <Link
             to="/links"
-            className="text-sm font-medium text-slate-500 hover:text-slate-900"
+            className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
           >
             ← Back to links
           </Link>
 
           <div className="mt-6">
-            <h1 className="text-3xl font-bold tracking-tight">URL Analytics</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              URL Analytics
+            </h1>
 
-            <p className="mt-2 text-sm text-slate-500 sm:text-base">
+            <p className="mt-2 text-sm text-slate-500 sm:text-base dark:text-slate-400">
               Track how your shortened URL is performing.
             </p>
           </div>

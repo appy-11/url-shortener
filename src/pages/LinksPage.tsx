@@ -8,7 +8,7 @@
  * It also provides a button to create new short URLs and displays the results in either a
  * table format for desktop or card format for mobile.
  *
- * The  UX rendering business logic is as follows:
+ * The UX rendering business logic is as follows:
  * 1. Fetch URLs using the useUrls hook.
  * 2. Apply search and status filters using the useUrlFilters hook.
  * 3. Display loading skeleton while fetching data.
@@ -21,14 +21,14 @@
 import { Link } from 'react-router-dom'
 
 import Button from '@/components/ui/Button'
-import ErrorState from '../components/ui/ErrorState'
+import ErrorState from '@/components/ui/ErrorState'
 import EmptyState from '@/components/ui/EmptyState'
 import Input from '@/components/ui/Input'
+import Select from '@/components/ui/Select'
 
 import UrlCard from '@/components/urls/UrlCard'
 import UrlTable from '@/components/urls/UrlTable'
 import UrlListSkeleton from '@/components/urls/UrlListSkeleton'
-import Select from '@/components/ui/Select'
 
 import { URL_CONFIG } from '@/config/url.config'
 import { useUrlFilters } from '@/hooks/useUrlFilters'
@@ -53,9 +53,11 @@ const LinksPage = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Your Links</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Your Links
+          </h2>
 
-          <p className="mt-2 text-sm text-slate-500 sm:text-base">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Manage and track your shortened URLs.
           </p>
         </div>
@@ -66,7 +68,7 @@ const LinksPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="mt-8 flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row">
+      <div className="mt-8 flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row dark:border-slate-700 dark:bg-slate-900">
         <div className="flex-1">
           <form
             onSubmit={(event) => {
@@ -90,7 +92,7 @@ const LinksPage = () => {
             label="Status"
             value={statusFilter}
             options={URL_CONFIG.statusFilters}
-            onChange={(value) => setStatusFilter(value as typeof statusFilter)}
+            onChange={setStatusFilter}
           />
         </div>
       </div>
@@ -161,7 +163,7 @@ const LinksPage = () => {
 
       {/* Result count */}
       {!isLoading && !error && urls.length > 0 && filteredUrls.length > 0 && (
-        <p className="mt-4 text-sm text-slate-500">
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
           Showing {filteredUrls.length} of {urls.length} links
         </p>
       )}

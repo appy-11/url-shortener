@@ -5,11 +5,9 @@
  */
 
 export const APP_CONFIG = {
-  name: "Shortly",
+  name: 'Shortly',
 
-  shortUrlDomain:
-    import.meta.env.VITE_SHORT_URL_DOMAIN ?? "short.ly",
+  shortUrlDomain: import.meta.env.VITE_SHORT_URL_DOMAIN ?? 'short.ly',
 
-  apiBaseUrl:
-    import.meta.env.VITE_API_BASE_URL ?? "",
-} as const;
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? '',
+} as const

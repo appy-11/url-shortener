@@ -10,24 +10,24 @@
 const AnalyticsSkeleton = () => {
   return (
     <div className="space-y-6">
-      <div className="h-5 w-28 animate-pulse rounded bg-slate-200" />
+      <div className="h-5 w-28 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
 
       <div>
-        <div className="h-8 w-48 animate-pulse rounded bg-slate-200" />
+        <div className="h-8 w-48 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
 
-        <div className="mt-3 h-4 w-72 animate-pulse rounded bg-slate-200" />
+        <div className="mt-3 h-4 w-72 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
-            className="h-32 animate-pulse rounded-xl border border-slate-200 bg-white"
+            className="h-32 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
           />
         ))}
       </div>
 
-      <div className="h-80 animate-pulse rounded-xl border border-slate-200 bg-white" />
+      <div className="h-80 animate-pulse rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800" />
     </div>
   )
 }

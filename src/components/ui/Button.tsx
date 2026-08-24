@@ -14,9 +14,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
-  primary: 'bg-slate-900 text-white hover:bg-slate-800',
-  secondary: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50',
-  ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+  primary:
+    'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200',
+
+  secondary:
+    'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800',
+
+  ghost:
+    'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white',
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -31,6 +36,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={[
           'rounded-lg px-4 py-3 text-sm font-medium transition',
           'disabled:cursor-not-allowed disabled:opacity-50',
+          'focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-slate-500 dark:focus-visible:ring-offset-slate-950',
           VARIANT_STYLES[variant],
           fullWidth ? 'w-full' : '',
           className,

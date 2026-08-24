@@ -18,30 +18,30 @@ const AnalyticsStats = ({ url }: AnalyticsStatsProps) => {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
-        <p className="text-sm text-slate-500">Total Clicks</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Total Clicks</p>
 
-        <p className="mt-2 text-3xl font-bold text-slate-900">
+        <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
           {url.clicks.toLocaleString()}
         </p>
       </Card>
 
       <Card>
-        <p className="text-sm text-slate-500">Created</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Created</p>
 
-        <p className="mt-2 text-lg font-semibold text-slate-900">
+        <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
           {new Date(url.createdAt).toLocaleDateString()}
         </p>
       </Card>
 
       <Card>
-        <p className="text-sm text-slate-500">Status</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Status</p>
 
         <div className="mt-2">
           <span
             className={
               url.status === 'active'
-                ? 'rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700'
-                : 'rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-700'
+                ? 'rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-950 dark:text-green-400'
+                : 'rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-950 dark:text-red-400'
             }
           >
             {url.status}
@@ -50,9 +50,9 @@ const AnalyticsStats = ({ url }: AnalyticsStatsProps) => {
       </Card>
 
       <Card>
-        <p className="text-sm text-slate-500">Expires</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Expires</p>
 
-        <p className="mt-2 text-lg font-semibold text-slate-900">
+        <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
           {url.expiresAt ? new Date(url.expiresAt).toLocaleDateString() : 'Never'}
         </p>
       </Card>

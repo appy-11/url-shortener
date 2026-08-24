@@ -27,9 +27,11 @@ const ClicksChart = ({ data }: ClicksChartProps) => {
   return (
     <Card className="mt-6">
       <div>
-        <h3 className="font-semibold text-slate-900">Clicks over time</h3>
+        <h3 className="font-semibold text-slate-900 dark:text-white">Clicks over time</h3>
 
-        <p className="mt-1 text-sm text-slate-500">Daily clicks for this short URL.</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Daily clicks for this short URL.
+        </p>
       </div>
 
       <div className="mt-6 h-72 w-full">
@@ -43,29 +45,48 @@ const ClicksChart = ({ data }: ClicksChartProps) => {
               bottom: 0,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid
+              stroke="var(--chart-grid)"
+              strokeDasharray="3 3"
+              vertical={false}
+            />
 
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: 'var(--chart-text)',
+              }}
             />
 
             <YAxis
               allowDecimals={false}
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: 'var(--chart-text)',
+              }}
             />
 
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'var(--chart-tooltip-bg)',
+                borderColor: 'var(--chart-tooltip-border)',
+                borderRadius: '8px',
+                color: 'var(--chart-tooltip-text)',
+              }}
+              labelStyle={{
+                color: 'var(--chart-tooltip-text)',
+              }}
+            />
 
             <Line
               type="monotone"
               dataKey="clicks"
-              stroke="currentColor"
-              className="text-slate-900"
+              stroke="var(--chart-line)"
               strokeWidth={2}
               dot={{ r: 3 }}
               activeDot={{ r: 5 }}

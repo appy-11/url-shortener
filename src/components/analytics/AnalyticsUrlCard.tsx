@@ -17,21 +17,21 @@ const AnalyticsUrlCard = ({ url }: AnalyticsUrlCardProps) => {
   return (
     <Card>
       <div>
-        <p className="text-sm text-slate-500">Short URL</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Short URL</p>
 
-        <p className="mt-1 text-lg font-semibold break-all text-slate-900">
+        <p className="mt-1 text-lg font-semibold break-all text-slate-900 dark:text-white">
           {APP_CONFIG.shortUrlDomain}/{url.shortCode}
         </p>
       </div>
 
       <div className="mt-5">
-        <p className="text-sm text-slate-500">Destination</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Destination</p>
 
         <a
           href={url.originalUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-1 block text-sm break-all text-slate-700 hover:underline"
+          className="mt-1 block text-sm break-all text-slate-700 hover:underline dark:text-slate-300"
         >
           {url.originalUrl}
         </a>
