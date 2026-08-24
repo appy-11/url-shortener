@@ -1,13 +1,13 @@
 /**
- * This module sets up an Express application with middleware for handling CORS, JSON parsing, and error handling.
- * It also defines a health check endpoint that verifies the application's ability to connect to the PostgreSQL database.
- * The application is configured to allow requests from a specified client URL, which can be set via an environment variable.
- * The Express application instance is exported for use in other parts of the application, such as the server entry point.
+ * This is the main entry point of the application.
+ * It sets up the Express server, configures middleware, and defines routes for handling requests.
  */
 import express from 'express'
 import cors from 'cors'
+
 import { db } from './infrastructure/postgres/client.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
+import urlRoutes from './modules/urls/url.routes.js'
 
 const app = express()
 
@@ -18,12 +18,6 @@ app.use(
 )
 
 app.use(express.json())
-
-// app.get('/health', (_request, response) => {
-//   response.status(200).json({
-//     status: 'ok',
-//   })
-// })
 
 app.get('/health', async (_request, response, next) => {
   try {
@@ -38,6 +32,17 @@ app.get('/health', async (_request, response, next) => {
   }
 })
 
+/**
+ * Mount the URL routes under the /api/urls path.
+ * All requests to /api/urls will be handled by the urlRoutes router.
+ */
+app.use('/api/urls', urlRoutes)
+
+/**
+ * Error handling middleware.
+ * This middleware catches any errors thrown in the application and sends an appropriate response to the client.
+ * It should be placed after all other middleware and routes.
+ */
 app.use(errorMiddleware)
 
 export default app
