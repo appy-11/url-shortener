@@ -4,8 +4,8 @@
  * The controller validates the input, interacts with the URL service, and sends appropriate responses to the client.
  */
 import type { Request, Response, NextFunction } from 'express'
-
-import { createShortUrl, UrlValidationError } from './url.service.js'
+import { APP_CONFIG } from '../../config/app.config.js'
+import { createShortUrl } from './url.service.js'
 
 import type { CreateUrlInput } from './url.types.js'
 
@@ -27,23 +27,13 @@ export const createUrlController = async (
     // Respond with a 201 status code and the details of the created short URL.
     response.status(201).json({
       id: url.id.toString(),
-      shortUrl: `https://short.ly/${url.shortCode}`,
+      shortUrl: `https://${APP_CONFIG.shortUrlDomain}/${url.shortCode}`,
       shortCode: url.shortCode,
       originalUrl: url.originalUrl,
       expiresAt: url.expiresAt,
       createdAt: url.createdAt,
     })
   } catch (error) {
-    // If the error is an instance of UrlValidationError, respond with a 400 status code and the error message.
-    if (error instanceof UrlValidationError) {
-      response.status(400).json({
-        error: 'INVALID_REQUEST',
-        message: error.message,
-      })
-
-      return
-    }
-
     next(error)
   }
 }

@@ -6,6 +6,8 @@
  */
 import type { ErrorRequestHandler } from 'express'
 
+import { ApiError } from '../utils/api-error.js'
+
 export const errorMiddleware: ErrorRequestHandler = (
   error,
   _request,
@@ -13,6 +15,15 @@ export const errorMiddleware: ErrorRequestHandler = (
   _next,
 ) => {
   console.error(error)
+
+  if (error instanceof ApiError) {
+    response.status(error.statusCode).json({
+      error: error.code,
+      message: error.message,
+    })
+
+    return
+  }
 
   response.status(500).json({
     error: 'INTERNAL_SERVER_ERROR',

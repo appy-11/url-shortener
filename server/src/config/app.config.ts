@@ -11,8 +11,11 @@ if (Number.isNaN(port)) {
   throw new Error('PORT must be a valid number')
 }
 
+const shortUrlDomain = process.env.SHORT_URL_DOMAIN ?? 'short.ly'
+
 export const APP_CONFIG = {
   name: 'Shortly API',
   port,
   nodeEnv: process.env.NODE_ENV ?? 'development',
+  shortUrlDomain,
 } as const
