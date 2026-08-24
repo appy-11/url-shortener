@@ -4,7 +4,6 @@
  */
 export const THEME_CONFIG = {
   storageKey: 'shortly-theme',
-  defaultTheme: 'system',
 } as const
 
-export type Theme = 'light' | 'dark' | 'system'
+export type Theme = 'light' | 'dark'

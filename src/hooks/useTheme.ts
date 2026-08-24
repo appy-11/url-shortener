@@ -15,17 +15,15 @@ const getSystemTheme = (): 'light' | 'dark' => {
 const getStoredTheme = (): Theme => {
   const storedTheme = localStorage.getItem(THEME_CONFIG.storageKey)
 
-  if (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system') {
+  if (storedTheme === 'light' || storedTheme === 'dark') {
     return storedTheme
   }
 
-  return THEME_CONFIG.defaultTheme
+  return getSystemTheme()
 }
 
 const applyTheme = (theme: Theme) => {
-  const resolvedTheme = theme === 'system' ? getSystemTheme() : theme
-
-  document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
+  document.documentElement.classList.toggle('dark', theme === 'dark')
 }
 
 export const useTheme = () => {
@@ -34,21 +32,9 @@ export const useTheme = () => {
   })
 
   useEffect(() => {
-    if (theme !== 'system') {
-      return
-    }
+    localStorage.setItem(THEME_CONFIG.storageKey, theme)
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-    const handleChange = () => {
-      applyTheme('system')
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange)
-    }
+    applyTheme(theme)
   }, [theme])
 
   return {
