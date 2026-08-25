@@ -130,3 +130,37 @@ export const getNextUrlId = async (): Promise<bigint> => {
   // Convert the ID from string to bigint and return it
   return BigInt(row.id)
 }
+
+/**
+ * Finds a URL record in the database by its short code.
+ * @param shortCode - The short code of the URL to find.
+ * @returns A promise resolving to the UrlRecord if found, or null if not found.
+ */
+export const findUrlByShortCode = async (
+  shortCode: string,
+): Promise<UrlRecord | null> => {
+  // Query the database to find a URL record matching the provided short code
+  const { rows } = await db.query(
+    `
+      SELECT
+        id,
+        short_code,
+        original_url,
+        expires_at,
+        created_at,
+        updated_at
+      FROM urls
+      WHERE short_code = $1
+      LIMIT 1
+    `,
+    [shortCode],
+  )
+
+  const row = rows[0]
+
+  if (!row) {
+    return null
+  }
+
+  return mapUrlRecord(row)
+}

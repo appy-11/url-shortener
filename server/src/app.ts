@@ -8,6 +8,7 @@ import cors from 'cors'
 import { db } from './infrastructure/postgres/client.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
 import urlRoutes from './modules/urls/url.routes.js'
+import { redirectUrlController } from './modules/urls/url.controller.js'
 
 const app = express()
 
@@ -37,6 +38,12 @@ app.get('/health', async (_request, response, next) => {
  * All requests to /api/urls will be handled by the urlRoutes router.
  */
 app.use('/api/urls', urlRoutes)
+
+/**
+ * Handle requests to short URLs by redirecting to the original URL.
+ * This route captures the short code from the URL and uses the redirectUrlController to resolve and redirect.
+ */
+app.get('/:shortCode', redirectUrlController)
 
 /**
  * Error handling middleware.

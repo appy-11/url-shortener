@@ -5,7 +5,7 @@
  */
 import type { Request, Response, NextFunction } from 'express'
 import { APP_CONFIG } from '../../config/app.config.js'
-import { createShortUrl } from './url.service.js'
+import { createShortUrl, resolveShortUrl } from './url.service.js'
 
 import type { CreateUrlInput } from './url.types.js'
 
@@ -33,6 +33,27 @@ export const createUrlController = async (
       expiresAt: url.expiresAt,
       createdAt: url.createdAt,
     })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Redirects the user to the original URL based on the provided short code.
+ */
+export const redirectUrlController = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Extract the short code from the request parameters.
+    const { shortCode } = request.params
+
+    // Call the service function to resolve the short URL to its original URL.
+    const url = await resolveShortUrl(shortCode as string)
+    // Redirect the user to the original URL with a 302 status code.
+    response.redirect(302, url.originalUrl)
   } catch (error) {
     next(error)
   }
