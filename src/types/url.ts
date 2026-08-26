@@ -10,7 +10,7 @@
  * These options define the possible durations for which a short URL can remain valid.
  * The options include "never", "1 hour", "1 day", "7 days", "30 days", and a custom option.
  */
-export type ExpiryOption = 'never' | '1h' | '1d' | '7d' | '30d' | 'custom'
+export type ExpiryOption = 'never' | '1h' | '1d' | '7d' | '30d'
 
 /**
  * Status of a short URL.
