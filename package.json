@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently --names client,server \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\" \"npm run dev:worker\"",
     "dev:client": "vite",
     "dev:server": "npm --prefix server run dev",
+    "dev:worker": "npm --prefix server run dev:worker",
     "build": "vite build && npm --prefix server run build",
     "build:client": "vite build",
     "build:server": "npm --prefix server run build",

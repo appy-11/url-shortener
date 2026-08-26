@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "dev:worker": "tsx watch src/worker.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "db:migrate": "tsx src/infrastructure/postgres/migrate.ts"
@@ -13,9 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bullmq": "^6.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
     "pg": "^8.23.0",
     "redis": "^6.2.1"
   },

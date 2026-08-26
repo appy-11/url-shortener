@@ -8,6 +8,7 @@ import { APP_CONFIG } from '../../config/app.config.js'
 import { createShortUrl, resolveShortUrl } from './url.service.js'
 
 import type { CreateUrlInput } from './url.types.js'
+import { recordClickAsync } from '../analytics/analytics.service.js'
 
 /**
  * Creates a new short URL based on the provided input.
@@ -52,6 +53,17 @@ export const redirectUrlController = async (
 
     // Call the service function to resolve the short URL to its original URL.
     const url = await resolveShortUrl(shortCode as string)
+
+    // add the click event to the analytics
+    // the idea is to make sure that the redirect doesnt wait for the analytics worker
+    // point to note here:What if Node crashes immediately after response.redirect() but before the queue request reaches Redis?
+    // That click could be lost.
+    // since analytics are not that important here, I m keeping it as it is.
+    // If the analytics are important then I need to transactional outbox
+    void recordClickAsync(url.id).catch((error) => {
+      console.error('Failed to queue analytics event:', error)
+    })
+
     // Redirect the user to the original URL with a 302 status code.
     response.redirect(302, url.originalUrl)
   } catch (error) {
