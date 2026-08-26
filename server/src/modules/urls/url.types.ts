@@ -26,3 +26,31 @@ export interface UrlRecord {
   createdAt: Date
   updatedAt: Date
 }
+/**
+ * This interface defines the structure of a URL record along with its analytics and status of shortUrl
+ */
+export interface UrlListItem extends UrlRecord {
+  clicks: number
+  status: 'active' | 'expired'
+}
+
+/**
+ * Data point representing the number of clicks on a short URL at a specific date.
+ * This interface defines the structure of a click data point, which includes the date and the number of clicks.
+ * It is used to track the click history of a short URL over time.
+ */
+export interface ClickDataPoint {
+  date: string
+  clicks: number
+}
+
+/**
+ * Analytics data for a short URL.
+ * This interface defines the structure of the analytics data for a short URL,
+ * including the short URL itself and an array of click data points representing the click history.
+ * It is used to provide insights into the performance and usage of a short URL.
+ */
+export interface UrlAnalytics {
+  url: UrlListItem
+  clickHistory: ClickDataPoint[]
+}

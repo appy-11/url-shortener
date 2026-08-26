@@ -6,11 +6,16 @@
 import { ApiError } from '../../utils/api-error.js'
 import { encodeBase62 } from '../../utils/base62.js'
 
-import { createUrl, getNextUrlId } from './url.repository.js'
+import {
+  createUrl,
+  findAllUrls,
+  findUrlByIdWithClicks,
+  getNextUrlId,
+} from './url.repository.js'
 
 import { validateCreateUrl } from './url.validation.js'
 
-import type { CreateUrlInput, UrlRecord } from './url.types.js'
+import type { CreateUrlInput, UrlListItem, UrlRecord } from './url.types.js'
 
 import { cacheUrl, getCachedUrl } from './url.cache.js'
 
@@ -82,5 +87,42 @@ export const resolveShortUrl = async (shortCode: string): Promise<UrlRecord> => 
   await cacheUrl(url)
 
   // Return the resolved UrlRecord.
+  return url
+}
+
+/**
+ * Returns all the short urls with their analytics
+ * @returns A promise resolving to the resolved UrlListItem array.
+ */
+export const getUrls = async (): Promise<UrlListItem[]> => {
+  return findAllUrls()
+}
+
+/**
+ * Retrieves a shortened URL by its ID.
+ *
+ * @param id - The URL ID provided as a string, typically from a route parameter.
+ * @returns The shortened URL details including click count and status.
+ * @throws ApiError - Throws a 400 error when the ID is not a valid integer.
+ * @throws ApiError - Throws a 404 error when the URL does not exist.
+ */
+export const getUrlById = async (id: string): Promise<UrlListItem> => {
+  let urlId: bigint
+
+  // Convert the string ID to BigInt and validate its format.
+  try {
+    urlId = BigInt(id)
+  } catch {
+    throw new ApiError(400, 'INVALID_URL_ID', 'The URL ID must be a valid integer.')
+  }
+
+  // Retrieve the URL and its click count from the repository.
+  const url = await findUrlByIdWithClicks(urlId)
+
+  // Return a 404 error when no matching URL is found.
+  if (!url) {
+    throw new ApiError(404, 'URL_NOT_FOUND', 'The requested shortened URL was not found.')
+  }
+
   return url
 }

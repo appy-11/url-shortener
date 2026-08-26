@@ -5,10 +5,12 @@
  */
 import { Router } from 'express'
 
-import { createUrlController } from './url.controller.js'
+import { createUrlController, getUrlsController } from './url.controller.js'
 
 const router = Router()
 
 router.post('/', createUrlController)
+
+router.get('/', getUrlsController)
 
 export default router

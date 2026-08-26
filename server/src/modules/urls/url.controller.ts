@@ -5,7 +5,7 @@
  */
 import type { Request, Response, NextFunction } from 'express'
 import { APP_CONFIG } from '../../config/app.config.js'
-import { createShortUrl, resolveShortUrl } from './url.service.js'
+import { createShortUrl, getUrls, resolveShortUrl } from './url.service.js'
 
 import type { CreateUrlInput } from './url.types.js'
 import { recordClickAsync } from '../analytics/analytics.service.js'
@@ -67,6 +67,46 @@ export const redirectUrlController = async (
     // Redirect the user to the original URL with a 302 status code.
     response.redirect(302, url.originalUrl)
   } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Controller for retrieving all shortened URLs.
+ *
+ * Fetches URL data from the service layer, formats the response for the API,
+ * and determines whether each URL is currently active or expired.
+ */
+
+export const getUrlsController = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Fetch all URLs along with their click counts.
+    const urls = await getUrls()
+
+    // Transform the service response into the API response format.
+    response.json(
+      urls.map((url) => ({
+        // Convert the BigInt ID to a string because JSON does not support BigInt.
+        id: url.id.toString(),
+
+        shortCode: url.shortCode,
+        originalUrl: url.originalUrl,
+        expiresAt: url.expiresAt,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+        clicks: url.clicks,
+
+        // A URL is expired when it has an expiry date in the past.
+        // URLs without an expiry date remain active.
+        status: url.expiresAt && url.expiresAt <= new Date() ? 'expired' : 'active',
+      })),
+    )
+  } catch (error) {
+    // Pass errors to Express's centralized error-handling middleware.
     next(error)
   }
 }

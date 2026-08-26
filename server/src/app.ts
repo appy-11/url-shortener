@@ -8,8 +8,8 @@ import cors from 'cors'
 import { db } from './infrastructure/postgres/client.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
 import urlRoutes from './modules/urls/url.routes.js'
-import { redirectUrlController } from './modules/urls/url.controller.js'
 import redirectRoutes from './modules/redirect/redirect.routes.js'
+import analyticsRoutes from './modules/analytics/analytics.routes.js'
 
 const app = express()
 
@@ -39,6 +39,7 @@ app.get('/health', async (_request, response, next) => {
  * All requests to /api/urls will be handled by the urlRoutes router.
  */
 app.use('/api/urls', urlRoutes)
+app.use('/api/urls', analyticsRoutes)
 
 /**
  *  Mount the URL routes under the /api/path
