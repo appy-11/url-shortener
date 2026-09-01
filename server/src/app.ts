@@ -21,9 +21,17 @@ const app = express()
  */
 app.use(helmet())
 
+/**
+ * Configure CORS so that only the configured frontend
+ * can make cross-origin requests to the API.
+ *
+ * Credentials are disabled because the application currently
+ * does not use cookies or browser-based authentication.
+ */
 app.use(
   cors({
     origin: ENV_CONFIG.clientUrl,
+    credentials: false,
   }),
 )
 
