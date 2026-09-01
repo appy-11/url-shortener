@@ -5,7 +5,7 @@
  */
 import type { Request, Response, NextFunction } from 'express'
 import { APP_CONFIG } from '../../config/app.config.js'
-import { createShortUrl, getUrls, resolveShortUrl } from './url.service.js'
+import { createShortUrl, getUrlById, getUrls, resolveShortUrl } from './url.service.js'
 
 import type { CreateUrlInput } from './url.types.js'
 import { recordClickAsync } from '../analytics/analytics.service.js'
@@ -107,6 +107,34 @@ export const getUrlsController = async (
     )
   } catch (error) {
     // Pass errors to Express's centralized error-handling middleware.
+    next(error)
+  }
+}
+
+/**
+ * Retrieves a shortened URL by its database ID.
+ */
+export const getUrlByIdController = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = request.params
+
+    const url = await getUrlById(id as string)
+
+    response.status(200).json({
+      id: url.id.toString(),
+      shortCode: url.shortCode,
+      originalUrl: url.originalUrl,
+      expiresAt: url.expiresAt,
+      createdAt: url.createdAt,
+      updatedAt: url.updatedAt,
+      clicks: url.clicks,
+      status: url.status,
+    })
+  } catch (error) {
     next(error)
   }
 }

@@ -5,6 +5,8 @@
  * The configuration object is exported as a constant for use in other parts of the application,
  * such as the PostgreSQL client setup.
  */
+import 'dotenv/config'
+
 const databaseUrl = process.env.DATABASE_URL
 
 if (!databaseUrl) {

@@ -35,23 +35,32 @@ app.get('/health', async (_request, response, next) => {
 })
 
 /**
- * Mount the URL routes under the /api/urls path.
- * All requests to /api/urls will be handled by the urlRoutes router.
+ * Mount the URL API routes under the /api/urls path.
+ *
+ * This includes:
+ * - POST /api/urls
+ * - GET /api/urls
+ * - GET /api/urls/:id
  */
 app.use('/api/urls', urlRoutes)
+
+/**
+ * Mount the analytics routes under the /api/urls path.
+ *
+ * This exposes:
+ * - GET /api/urls/:id/analytics
+ */
 app.use('/api/urls', analyticsRoutes)
 
 /**
- *  Mount the URL routes under the /api/path
- *  All requests to /api/ will be handled by the redirectRoutes router.
+ * Mount the redirect routes at the root path.
+ *
+ * Short URLs are accessed directly using their short code:
+ * - GET /:shortCode
+ *
+ * Example:
+ * GET /abc123
  */
 app.use('/', redirectRoutes)
-
-/**
- * Error handling middleware.
- * This middleware catches any errors thrown in the application and sends an appropriate response to the client.
- * It should be placed after all other middleware and routes.
- */
-app.use(errorMiddleware)
 
 export default app
