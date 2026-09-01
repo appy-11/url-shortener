@@ -6,8 +6,6 @@
  * from the BullMQ analytics queue.
  */
 
-import 'dotenv/config'
-
 import { analyticsQueue } from '../../modules/analytics/analytics.queue.js'
 
 const clearAnalyticsQueue = async () => {

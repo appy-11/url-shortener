@@ -8,16 +8,15 @@
  * The server also handles graceful shutdown so that active connections
  * are closed cleanly when the process receives a termination signal.
  */
-import 'dotenv/config'
 
 import type { Server } from 'node:http'
-
+import { ENV_CONFIG } from './config/env.config.js'
 import app from './app.js'
 import { APP_CONFIG } from './config/app.config.js'
 import { db } from './infrastructure/postgres/client.js'
 import { redis } from './infrastructure/redis/client.js'
 
-const port = Number(process.env.PORT ?? 3000)
+const port = ENV_CONFIG.port
 
 let server: Server | undefined
 

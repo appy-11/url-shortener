@@ -7,8 +7,9 @@
  * There should be one shared Redis client.
  */
 import { createClient } from 'redis'
+import { ENV_CONFIG } from '../../config/env.config.js'
 
-const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379'
+const redisUrl = ENV_CONFIG.redisUrl
 
 export const redis = createClient({
   url: redisUrl,

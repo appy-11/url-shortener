@@ -10,12 +10,13 @@ import { errorMiddleware } from './middleware/error.middleware.js'
 import urlRoutes from './modules/urls/url.routes.js'
 import redirectRoutes from './modules/redirect/redirect.routes.js'
 import analyticsRoutes from './modules/analytics/analytics.routes.js'
+import { ENV_CONFIG } from './config/env.config.js'
 
 const app = express()
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL ?? 'http://localhost:5173',
+    origin: ENV_CONFIG.clientUrl,
   }),
 )
 

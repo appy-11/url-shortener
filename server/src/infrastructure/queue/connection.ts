@@ -6,9 +6,10 @@
 
 import { Redis } from 'ioredis'
 
-// Redis connection URL, configurable through the environment.
-// Falls back to the local Redis instance during development.
-const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379'
+import { ENV_CONFIG } from '../../config/env.config.js'
+
+// Redis connection URL is provided by the centralized environment configuration.
+const redisUrl = ENV_CONFIG.redisUrl
 
 // Create a shared Redis connection for the application's queues.
 //

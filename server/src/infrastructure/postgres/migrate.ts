@@ -4,7 +4,6 @@
  * checks if they have already been applied, and if not, applies them to the database.
  * It also keeps track of applied migrations in a schema_migrations table.
  */
-import 'dotenv/config'
 
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
