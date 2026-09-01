@@ -235,5 +235,34 @@ describe('Analytics worker', () => {
         }),
       ).rejects.toThrow()
     })
+
+    /**
+     * Verifies that a click event referencing a deleted/non-existent URL
+     * does not cause the worker to retry the job.
+     *
+     * The repository converts PostgreSQL's foreign-key violation into
+     * UrlNotFoundError, which the worker treats as a permanent failure.
+     */
+    it('does not retry when the URL no longer exists', async () => {
+      const { processAnalyticsJob } = await import('./analytics.worker.js')
+
+      /**
+       * Use a URL ID that does not exist in the database.
+       */
+      const nonExistentUrlId = '999999999'
+
+      /**
+       * The processor should resolve normally because the worker
+       * deliberately handles UrlNotFoundError as a permanent failure.
+       */
+      await expect(
+        processAnalyticsJob({
+          data: {
+            urlId: nonExistentUrlId,
+            clickedAt: '2026-08-25T10:00:00.000Z',
+          },
+        }),
+      ).resolves.toBeUndefined()
+    })
   })
 })

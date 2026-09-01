@@ -9,7 +9,7 @@ import { Worker } from 'bullmq'
 
 import { ANALYTICS_QUEUE_NAME, type ClickEventJob } from './analytics.queue.js'
 
-import { createClickEvent } from './analytics.repository.js'
+import { createClickEvent, UrlNotFoundError } from './analytics.repository.js'
 
 import { queueConnection } from '../../infrastructure/queue/connection.js'
 
@@ -29,9 +29,33 @@ export const processAnalyticsJob = async (job: {
   // Extract the URL ID and click timestamp from the queued job.
   const { urlId, clickedAt } = job.data
 
-  // Convert the serialized values back to their appropriate types
-  // before storing the click event in PostgreSQL.
-  await createClickEvent(BigInt(urlId), new Date(clickedAt))
+  try {
+    // Convert the serialized values back to their appropriate types
+    // before storing the click event in PostgreSQL.
+    await createClickEvent(BigInt(urlId), new Date(clickedAt))
+  } catch (error) {
+    /**
+     * A missing URL is a permanent failure.
+     *
+     * Retrying the job cannot fix the problem because the referenced
+     * URL does not exist in the database.
+     */
+    if (error instanceof UrlNotFoundError) {
+      console.error(error.message)
+
+      // Do not re-throw the error. This prevents BullMQ from retrying
+      // a job that can never succeed.
+      return
+    }
+
+    /**
+     * All other errors are potentially transient.
+     *
+     * Re-throwing the error allows BullMQ's retry and exponential
+     * backoff configuration to handle the failure.
+     */
+    throw error
+  }
 }
 
 // Create a worker that listens to the analytics queue and processes click events.
