@@ -13,17 +13,31 @@ import { createClickEvent } from './analytics.repository.js'
 
 import { queueConnection } from '../../infrastructure/queue/connection.js'
 
+/**
+ * Processes a single analytics job.
+ *
+ * The values inside the BullMQ job are serialized values, so the URL ID
+ * and click timestamp need to be converted back into their appropriate
+ * JavaScript types before being passed to the repository.
+ *
+ * Keeping this logic separate from the Worker instance also makes it
+ * possible to test the processing logic without starting a Redis worker.
+ */
+export const processAnalyticsJob = async (job: {
+  data: ClickEventJob
+}): Promise<void> => {
+  // Extract the URL ID and click timestamp from the queued job.
+  const { urlId, clickedAt } = job.data
+
+  // Convert the serialized values back to their appropriate types
+  // before storing the click event in PostgreSQL.
+  await createClickEvent(BigInt(urlId), new Date(clickedAt))
+}
+
 // Create a worker that listens to the analytics queue and processes click events.
 export const analyticsWorker = new Worker<ClickEventJob>(
   ANALYTICS_QUEUE_NAME,
-  async (job) => {
-    // Extract the URL ID and click timestamp from the queued job.
-    const { urlId, clickedAt } = job.data
-
-    // Convert the serialized values back to their appropriate types
-    // before storing the click event in PostgreSQL.
-    await createClickEvent(BigInt(urlId), new Date(clickedAt))
-  },
+  processAnalyticsJob,
   {
     // Use the shared Redis connection to communicate with BullMQ.
     connection: queueConnection,
