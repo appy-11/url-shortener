@@ -91,6 +91,24 @@ services:
     # The worker processes BullMQ analytics jobs.
     command: ['node', 'dist/worker.js']
 
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+      # Vite variables are build-time variables.
+      args:
+        VITE_API_BASE_URL: http://localhost:3000
+        VITE_SHORT_URL_DOMAIN: short.ly
+
+    container_name: shortly-frontend
+    restart: unless-stopped
+
+    ports:
+      - '5173:80'
+
+    depends_on:
+      - api
 volumes:
   postgres_data:
   redis_data:
