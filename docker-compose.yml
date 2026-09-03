@@ -53,7 +53,21 @@ services:
 
     ports:
       - '3000:3000'
-
+    healthcheck:
+      # Verify that the Express health endpoint is responding.
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:3000/health',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
       postgres:
         condition: service_healthy
@@ -106,9 +120,17 @@ services:
 
     ports:
       - '5173:80'
+    healthcheck:
+      # Verify that Nginx is serving the React application.
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 volumes:
   postgres_data:
   redis_data:
