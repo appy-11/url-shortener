@@ -13,12 +13,46 @@ jobs:
     name: Test and Build
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: shortly
+          POSTGRES_USER: shortly
+          POSTGRES_PASSWORD: shortly
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U shortly -d shortly"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://shortly:shortly@localhost:5432/shortly
+      DB_POOL_MAX: 10
+      REDIS_URL: redis://localhost:6379
+      CLIENT_URL: http://localhost:5173
+      PORT: 3000
+      SHORT_URL_DOMAIN: short.ly
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -28,6 +62,10 @@ jobs:
 
       - name: Install server dependencies
         run: npm ci
+        working-directory: server
+
+      - name: Run database migrations
+        run: npm run db:migrate
         working-directory: server
 
       - name: Run backend tests
