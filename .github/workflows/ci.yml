@@ -64,6 +64,12 @@ jobs:
         run: npm ci
         working-directory: server
 
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Run database migrations
         run: npm run db:migrate
         working-directory: server
