@@ -21,6 +21,8 @@ export const errorMiddleware: ErrorRequestHandler = (
 ) => {
   // Log the complete error on the server for debugging and monitoring.
   console.error(error)
+  const errorValue: unknown = error
+  void _next
 
   /**
    * Handle application-specific errors.
@@ -45,10 +47,10 @@ export const errorMiddleware: ErrorRequestHandler = (
    * so they should return HTTP 400 rather than HTTP 500.
    */
   if (
-    typeof error === 'object' &&
-    error !== null &&
-    'type' in error &&
-    error.type === 'entity.parse.failed'
+    typeof errorValue === 'object' &&
+    errorValue !== null &&
+    'type' in errorValue &&
+    errorValue.type === 'entity.parse.failed'
   ) {
     response.status(400).json({
       error: 'INVALID_JSON',

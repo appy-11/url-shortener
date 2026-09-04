@@ -24,6 +24,9 @@ import { analyticsQueue } from './analytics.queue.js'
 
 import { recordClickAsync } from './analytics.service.js'
 
+const analyticsQueueMock = vi.mocked(analyticsQueue)
+const addMock = analyticsQueueMock['add']
+
 describe('Analytics service', () => {
   /**
    * Reset mock calls and implementations before every test.
@@ -40,7 +43,7 @@ describe('Analytics service', () => {
      * with the expected job name and payload.
      */
     it('adds a click event to the analytics queue', async () => {
-      vi.mocked(analyticsQueue.add).mockResolvedValue({} as never)
+      addMock.mockResolvedValue({} as never)
 
       const urlId = 123n
 
@@ -49,14 +52,13 @@ describe('Analytics service', () => {
       /**
        * Verify that BullMQ receives the expected job.
        */
-      expect(analyticsQueue.add).toHaveBeenCalledOnce()
+      expect(addMock).toHaveBeenCalledOnce()
 
       /**
        * Extract the arguments passed to queue.add() so we can verify
        * the complete job configuration.
        */
-      const [jobName, jobData, jobOptions] =
-        vi.mocked(analyticsQueue.add).mock.calls[0] ?? []
+      const [jobName, jobData, jobOptions] = addMock.mock.calls[0] ?? []
 
       expect(jobName).toBe('url-click')
 
@@ -98,13 +100,13 @@ describe('Analytics service', () => {
      * values directly.
      */
     it('serializes the URL ID as a string', async () => {
-      vi.mocked(analyticsQueue.add).mockResolvedValue({} as never)
+      addMock.mockResolvedValue({} as never)
 
       const urlId = 987654321987654321n
 
       await recordClickAsync(urlId)
 
-      const [, jobData] = vi.mocked(analyticsQueue.add).mock.calls[0] ?? []
+      const [, jobData] = addMock.mock.calls[0] ?? []
 
       expect(jobData).toMatchObject({
         urlId: '987654321987654321',
@@ -120,7 +122,7 @@ describe('Analytics service', () => {
     it('propagates queue errors', async () => {
       const queueError = new Error('Redis connection failed')
 
-      vi.mocked(analyticsQueue.add).mockRejectedValue(queueError)
+      addMock.mockRejectedValue(queueError)
 
       await expect(recordClickAsync(123n)).rejects.toThrow('Redis connection failed')
     })

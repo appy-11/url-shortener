@@ -5,11 +5,11 @@
  */
 export const NAVIGATION_CONFIG = [
   {
-    label: "Create",
-    path: "/",
+    label: 'Create',
+    path: '/',
   },
   {
-    label: "Links",
-    path: "/links",
+    label: 'Links',
+    path: '/links',
   },
-] as const;
+] as const

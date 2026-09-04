@@ -19,19 +19,29 @@ interface CreateUrlRecord {
   expiresAt: Date | null
 }
 
+interface UrlRow {
+  id: string
+  short_code: string
+  original_url: string
+  expires_at: Date | null
+  created_at: Date
+  updated_at: Date
+  clicks?: number | string
+}
+
 /**
  * Maps a database row to a UrlRecord object.
  * @param row - The database row containing URL record data.
  * @returns A UrlRecord object with the mapped properties.
  */
-const mapUrlRecord = (row: Record<string, unknown>): UrlRecord => {
+const mapUrlRecord = (row: UrlRow): UrlRecord => {
   return {
-    id: BigInt(row.id as string),
-    shortCode: row.short_code as string,
-    originalUrl: row.original_url as string,
-    expiresAt: row.expires_at as Date | null,
-    createdAt: row.created_at as Date,
-    updatedAt: row.updated_at as Date,
+    id: BigInt(row.id),
+    shortCode: row.short_code,
+    originalUrl: row.original_url,
+    expiresAt: row.expires_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   }
 }
 
@@ -49,7 +59,7 @@ export const createUrl = async (record: CreateUrlRecord): Promise<UrlRecord> => 
     await client.query('BEGIN')
 
     // Insert the new URL record into the database and return the inserted row
-    const { rows } = await client.query(
+    const { rows } = await client.query<UrlRow>(
       `
         INSERT INTO urls (
           id,
@@ -140,7 +150,7 @@ export const findUrlByShortCode = async (
   shortCode: string,
 ): Promise<UrlRecord | null> => {
   // Query the database to find a URL record matching the provided short code
-  const { rows } = await db.query(
+  const { rows } = await db.query<UrlRow>(
     `
       SELECT
         id,
@@ -175,7 +185,7 @@ export const findUrlByShortCode = async (
  */
 
 export const findAllUrls = async (): Promise<UrlListItem[]> => {
-  const { rows } = await db.query(`
+  const { rows } = await db.query<UrlRow>(`
     SELECT
       u.id,
       u.short_code,
@@ -216,9 +226,7 @@ export const findAllUrls = async (): Promise<UrlListItem[]> => {
     // Mark the URL as expired when its expiry date has passed.
     // URLs without an expiry date are considered active.
     status:
-      row.expires_at && new Date(row.expires_at as string) <= new Date()
-        ? 'expired'
-        : 'active',
+      row.expires_at && new Date(row.expires_at) <= new Date() ? 'expired' : 'active',
   }))
 }
 
@@ -278,7 +286,7 @@ export const findClickHistory = async (urlId: bigint): Promise<ClickDataPoint[]>
  * @returns The URL details with click count and status, or null if the URL does not exist.
  */
 export const findUrlByIdWithClicks = async (id: bigint): Promise<UrlListItem | null> => {
-  const { rows } = await db.query(
+  const { rows } = await db.query<UrlRow>(
     `
     SELECT
       u.id,
@@ -313,8 +321,6 @@ export const findUrlByIdWithClicks = async (id: bigint): Promise<UrlListItem | n
     ...mapUrlRecord(row),
     clicks: Number(row.clicks),
     status:
-      row.expires_at && new Date(row.expires_at as string) <= new Date()
-        ? 'expired'
-        : 'active',
+      row.expires_at && new Date(row.expires_at) <= new Date() ? 'expired' : 'active',
   }
 }

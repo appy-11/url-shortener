@@ -134,9 +134,11 @@ describe('URL API', () => {
 
     expect(response.status).toBe(200)
 
-    expect(response.body).toHaveLength(1)
+    const responseBody = response.body as Array<Record<string, unknown>>
 
-    expect(response.body[0]).toMatchObject({
+    expect(responseBody).toHaveLength(1)
+
+    expect(responseBody[0]).toMatchObject({
       id: '1',
       shortCode: 'abc123',
       originalUrl: 'https://example.com',
